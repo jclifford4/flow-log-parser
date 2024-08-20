@@ -29,7 +29,7 @@ The default flow log format is the immutable standard format using v2. The avail
     - [C\# Dev Kit](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
     - You may have to restart VS Code to allow changes to take place
  - Clone the repo to desired location
- - `cd flow-log-parser` and `. code` for full project
+ - `cd flow-log-parser` and `code .` for full project
     -  then `dotnet build`
     -  then `cd flow-log-parser` again
     -  then `dotnet run`
