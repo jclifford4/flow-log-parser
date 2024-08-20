@@ -1,15 +1,16 @@
 using System.IO;
+using System.Net.Sockets;
 
 namespace FlowLog
 {
     public static class FlowLogParser
     {
         /// <summary>
-        /// Reads a flow log file and writes dstport and protocol type to console
+        /// Reads flow log and maps {protocol:keyword} from protocol.csv
         /// </summary>
         /// <param name="filepath"></param>
         /// <param name="protocolDict"></param>
-        public static void ReadFlowLog(string filepath, Dictionary<string, string> protocolDict)
+        public static void ReadFlowLog(string filepath, Dictionary<string, string> protocolDict, Dictionary<Tuple<string, string>, string> tagDict, Dictionary<string, int> tagCounts, Dictionary<Tuple<string, string>, int> portProtCounts)
         {
             var portProtocolBucket = new List<Tuple<string, string>>();
             using (StreamReader reader = new StreamReader(filepath))
@@ -21,7 +22,78 @@ namespace FlowLog
                 }
             }
 
-            WriteDSTPortAndProtocol(portProtocolBucket);
+
+            Console.WriteLine();
+            // Now check tagDict if the pair exists.
+            foreach (var item in portProtocolBucket)
+            {
+                var pair = new Tuple<string, string>(item.Item1, item.Item2);
+                CountFlowlogTags(pair, tagCounts, tagDict);
+            }
+
+            OutputFlowlogTagCountsToFile("Tag Counts", "Tag,Count", tagCounts);
+
+            CountPortAndProtocolCombinations(portProtocolBucket, portProtCounts);
+            OutputFlowlogPortAndProtocolCountsToFile("Port/Protocol Combination Counts", "Port,Protocol,Count", portProtCounts);
+
+        }
+
+        /// <summary>
+        /// Outputs the summary counts from the flowlog
+        /// </summary>
+        /// <param name="countDict"></param>
+        private static void OutputFlowlogTagCountsToFile(string title, string csv, Dictionary<string, int> countDict)
+        {
+            string filePath = "../output.csv";
+
+            if (!File.Exists(filePath))
+            {
+                File.AppendAllText(filePath, title + ":\n");
+                File.AppendAllText(filePath, csv + "\n");
+            }
+
+            foreach (var tag in countDict)
+            {
+                File.AppendAllText(filePath,
+                tag.Key.Trim() +
+                "," +
+                tag.Value + "\n");
+
+            }
+        }
+
+        /// <summary>
+        /// Outputs the summary counts of Port,Protocol from flowlog file
+        /// </summary>
+        /// <param name="countDict"></param>
+        private static void OutputFlowlogPortAndProtocolCountsToFile(string title, string csv, Dictionary<Tuple<string, string>, int> countDict)
+        {
+            string filePath = "../output.csv";
+
+            File.AppendAllText(filePath, title + ":\n");
+            File.AppendAllText(filePath, csv + "\n");
+
+
+            foreach (var tag in countDict)
+            {
+                File.AppendAllText(filePath,
+                tag.Key.Item1.Trim() + "," +
+                tag.Key.Item2.Trim() + "," +
+                tag.Value + "\n");
+            }
+        }
+
+        /// <summary>
+        /// Removes output file
+        /// </summary>
+        public static void RemoveOutputFile()
+        {
+            string filePath = "../output.csv";
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
         }
 
         /// <summary>
@@ -51,6 +123,36 @@ namespace FlowLog
                         protocolDict.TryAdd(protocolDecimal, lineItems[1]);
                     }
 
+                }
+            }
+        }
+
+        /// <summary>
+        /// Initialilzes lookup table for O(1) lookup time
+        /// </summary>
+        /// <param name="filepath"></param>
+        /// <param name="tagDict"></param>
+        public static void InitializeTagLookup(string filepath, Dictionary<Tuple<string, string>, string> tagDict)
+        {
+            using (var reader = new StreamReader(filepath))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+
+                    if (string.IsNullOrWhiteSpace(line))
+                    {
+                        continue;
+                    }
+
+                    char delimiter = ',';
+                    string[] lineItems = line.Split(delimiter);
+
+                    string port = lineItems[0];
+                    string protocol = lineItems[1];
+                    string tag = lineItems[2];
+
+                    tagDict.TryAdd(new Tuple<string, string>(port, protocol), tag);
                 }
             }
         }
@@ -86,6 +188,34 @@ namespace FlowLog
         }
 
         /// <summary>
+        /// Outputs tags to a file and lists their count from flowlog file
+        /// </summary>
+        /// <param name="dst"></param>
+        /// <param name="protocol"></param>
+        /// <param name="tagCounts"></param>
+        /// <param name="tagDict"></param>
+        public static void CountFlowlogTags(Tuple<string, string> tagPair, Dictionary<string, int> tagCounts, Dictionary<Tuple<string, string>, string> tagDict)
+        {
+            // Look up the {dst,protocol} in the tag dict for a count
+            if (tagDict.ContainsKey(tagPair))
+            {
+                if (!tagCounts.ContainsKey(tagDict[tagPair]))
+                    tagCounts.TryAdd(tagDict[tagPair], 1);
+                else
+                    tagCounts[tagDict[tagPair]]++;
+            }
+            else
+            {
+                // If not there mark as untagged
+                if (!tagCounts.ContainsKey("Untagged"))
+                    tagCounts.TryAdd("Untagged", 1);
+                else
+                    tagCounts["Untagged"]++;
+            }
+
+        }
+
+        /// <summary>
         /// Converts protocol number to protocol keyword
         /// </summary>
         /// <param name="protocolNumber"></param>
@@ -96,11 +226,24 @@ namespace FlowLog
             return protocolDict.ContainsKey(protocolNumber) ? protocolDict[protocolNumber].ToLower() : "n/a";
         }
 
-        private static void WriteDSTPortAndProtocol(List<Tuple<string, string>> portProtocolBucket)
+        private static void CountPortAndProtocolCombinations(List<Tuple<string, string>> portProtocolBucket, Dictionary<Tuple<string, string>, int> portProtCounts)
         {
             foreach (var item in portProtocolBucket)
             {
-                Console.WriteLine(item.Item1 + "," + item.Item2);
+                var pair = Tuple.Create(item.Item1, item.Item2);
+                if (!portProtCounts.ContainsKey(pair))
+                    portProtCounts.TryAdd(pair, 1);
+                else
+                    portProtCounts[pair]++;
+
+                // Console.WriteLine(item.Item1 + "," + item.Item2);
+            }
+        }
+        public static void WriteTagCounts(Dictionary<string, int> tagCounts)
+        {
+            foreach (var item in tagCounts)
+            {
+                Console.WriteLine(item.Key.Trim() + "," + item.Value);
             }
         }
 
@@ -128,7 +271,6 @@ namespace FlowLog
 
             }
         }
-
 
         /// <summary>
         /// Grabs specific line matching protocol number and returns the Keyword
@@ -167,5 +309,8 @@ namespace FlowLog
             return null;
         }
     }
+
+
+
 
 }
