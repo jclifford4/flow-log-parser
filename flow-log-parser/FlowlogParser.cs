@@ -27,7 +27,7 @@ namespace FlowLog
             // Now check tagDict if the pair exists.
             foreach (var item in portProtocolBucket)
             {
-                var pair = new Tuple<string, string>(item.Item1, item.Item2);
+                var pair = new Tuple<string, string>(item.Item1.ToLower(), item.Item2.ToLower());
                 CountFlowlogTags(pair, tagCounts, tagDict);
             }
 
@@ -55,7 +55,7 @@ namespace FlowLog
             foreach (var tag in countDict)
             {
                 File.AppendAllText(filePath,
-                tag.Key.Trim() +
+                tag.Key.Trim().ToLower() +
                 "," +
                 tag.Value + "\n");
 
@@ -120,7 +120,7 @@ namespace FlowLog
                     }
                     else
                     {
-                        protocolDict.TryAdd(protocolDecimal, lineItems[1]);
+                        protocolDict.TryAdd(protocolDecimal, lineItems[1].ToLower());
                     }
 
                 }
@@ -152,7 +152,7 @@ namespace FlowLog
                     string protocol = lineItems[1];
                     string tag = lineItems[2];
 
-                    tagDict.TryAdd(new Tuple<string, string>(port, protocol), tag);
+                    tagDict.TryAdd(new Tuple<string, string>(port.ToLower(), protocol.ToLower()), tag);
                 }
             }
         }
@@ -179,7 +179,7 @@ namespace FlowLog
 
                     string protocolKeyword = GetProtocolKeyword(protocolNumber, protocolDict);
 
-                    portProtocol.Add(Tuple.Create(dstport, protocolKeyword));
+                    portProtocol.Add(Tuple.Create(dstport.ToLower(), protocolKeyword.ToLower()));
 
                     return true;
                 }
@@ -230,45 +230,13 @@ namespace FlowLog
         {
             foreach (var item in portProtocolBucket)
             {
-                var pair = Tuple.Create(item.Item1, item.Item2);
+                var pair = Tuple.Create(item.Item1.ToLower(), item.Item2.ToLower());
                 if (!portProtCounts.ContainsKey(pair))
                     portProtCounts.TryAdd(pair, 1);
                 else
                     portProtCounts[pair]++;
 
                 // Console.WriteLine(item.Item1 + "," + item.Item2);
-            }
-        }
-        public static void WriteTagCounts(Dictionary<string, int> tagCounts)
-        {
-            foreach (var item in tagCounts)
-            {
-                Console.WriteLine(item.Key.Trim() + "," + item.Value);
-            }
-        }
-
-        /// <summary>
-        /// Reads and converts protocol decimal to its associated Keyword
-        /// </summary>
-        /// <param name="filepath"></param>
-        /// <param name="protocolNumber"></param>
-        private static void ReadProtocolNumbers(string filepath, int protocolNumber)
-        {
-            using (StreamReader reader = new StreamReader(filepath))
-            {
-                try
-                {
-                    string line = GetLineFromFile(filepath, protocolNumber + 1);
-                    if (line != null)
-                    {
-                        Console.WriteLine(line);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"An error occured: {ex.Message}");
-                }
-
             }
         }
 
