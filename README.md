@@ -12,8 +12,8 @@ The default flow log format is the immutable standard format using v2. The avail
 # Windows Download
 - Download the win-x64.zip in Releases
 - Unzip the files
+- `cd` into the unzipped folder
 - Inside will be:
-  - `cd` into the unzipped folder
   - lookup-table.csv for mappings
   - protocol-numbers.csv for protocol codes
   - flow-log-parser
