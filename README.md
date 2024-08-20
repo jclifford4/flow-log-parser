@@ -65,5 +65,5 @@ The default flow log format is the immutable standard format using v2. The avail
 - Parsing lookup-table.csv for mappings:
   - O(n * m) time, where n is lines in file, m is length of line.
 - Parsing flowlog.txt:
-  - O((n * m) + c + t + p + o) time where n is lines in file, m is length of delimited line, c is counting tags, t is outputing count to file, p is counting port and protocol counts, and o is outputng port counts to file. 
+  - O((n * m) + c + t + p + o) time where n is lines in file, m is length of delimited line, c is counting tags, t is outputting count to file, p is counting port and protocol counts, and o is outputting port counts to file. 
   - This can be reduced to O(n^2 + 4n) == O(n^2). For the entire parse.
