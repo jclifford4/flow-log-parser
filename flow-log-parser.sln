@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "flow-log-parser", "flow-log-parser\flow-log-parser.csproj", "{BF2D6DCB-FF26-4FFF-BCF5-7F00226ADBF2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "flow-log-parser.Test", "flow-log-parser.Test\flow-log-parser.Test.csproj", "{FC575DED-F851-43E7-AF18-20D5B4EF5E0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{BF2D6DCB-FF26-4FFF-BCF5-7F00226ADBF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF2D6DCB-FF26-4FFF-BCF5-7F00226ADBF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF2D6DCB-FF26-4FFF-BCF5-7F00226ADBF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC575DED-F851-43E7-AF18-20D5B4EF5E0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC575DED-F851-43E7-AF18-20D5B4EF5E0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC575DED-F851-43E7-AF18-20D5B4EF5E0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC575DED-F851-43E7-AF18-20D5B4EF5E0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

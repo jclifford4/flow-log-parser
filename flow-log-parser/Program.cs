@@ -9,8 +9,8 @@ var tagCounts = new Dictionary<string, int>();  // tag, count
 var portProtCounts = new Dictionary<Tuple<string, string>, int>();  // {port, protocol}, count
 
 // Initialize Look up maps for quick look up matching.
-FlowLogParser.InitializeProtocolLookup("../protocol-numbers.csv", protocolDictonary);
-FlowLogParser.InitializeTagLookup("../lookup-table.csv", tagDictionary);
+FlowLogParser.InitializeProtocolLookup("protocol-numbers.csv", protocolDictonary);
+FlowLogParser.InitializeTagLookup("lookup-table.csv", tagDictionary);
 
 // Parse Flowlog
-FlowLogParser.ReadFlowLog("../flowlog.txt", protocolDictonary, tagDictionary, tagCounts, portProtCounts);
+FlowLogParser.ReadFlowLog("flowlog.txt", protocolDictonary, tagDictionary, tagCounts, portProtCounts);

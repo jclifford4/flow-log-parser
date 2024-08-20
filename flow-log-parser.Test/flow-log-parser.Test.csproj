@@ -21,4 +21,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\flow-log-parser\flow-log-parser.csproj" />
+  </ItemGroup>
+
 </Project>

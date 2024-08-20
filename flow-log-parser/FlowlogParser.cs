@@ -1,12 +1,10 @@
-using System.IO;
-using System.Net.Sockets;
 
 namespace FlowLog
 {
     public static class FlowLogParser
     {
         /// <summary>
-        /// Reads flow log and maps {protocol:keyword} from protocol.csv
+        /// Reads flow log and counts the tags and the {port, protocol} combinations
         /// </summary>
         /// <param name="filepath"></param>
         /// <param name="protocolDict"></param>
@@ -22,17 +20,17 @@ namespace FlowLog
                 }
             }
 
-
-            Console.WriteLine();
-            // Now check tagDict if the pair exists.
+            // Count the Tags.
             foreach (var item in portProtocolBucket)
             {
                 var pair = new Tuple<string, string>(item.Item1.ToLower(), item.Item2.ToLower());
                 CountFlowlogTags(pair, tagCounts, tagDict);
             }
 
+            // Output the tag results.
             OutputFlowlogTagCountsToFile("Tag Counts", "Tag,Count", tagCounts);
 
+            // Count and output the Port results
             CountPortAndProtocolCombinations(portProtocolBucket, portProtCounts);
             OutputFlowlogPortAndProtocolCountsToFile("Port/Protocol Combination Counts", "Port,Protocol,Count", portProtCounts);
 
@@ -44,7 +42,7 @@ namespace FlowLog
         /// <param name="countDict"></param>
         private static void OutputFlowlogTagCountsToFile(string title, string csv, Dictionary<string, int> countDict)
         {
-            string filePath = "../output.csv";
+            string filePath = "output.csv";
 
             if (!File.Exists(filePath))
             {
@@ -68,7 +66,7 @@ namespace FlowLog
         /// <param name="countDict"></param>
         private static void OutputFlowlogPortAndProtocolCountsToFile(string title, string csv, Dictionary<Tuple<string, string>, int> countDict)
         {
-            string filePath = "../output.csv";
+            string filePath = "output.csv";
 
             File.AppendAllText(filePath, title + ":\n");
             File.AppendAllText(filePath, csv + "\n");
@@ -88,7 +86,7 @@ namespace FlowLog
         /// </summary>
         public static void RemoveOutputFile()
         {
-            string filePath = "../output.csv";
+            string filePath = "output.csv";
 
             if (File.Exists(filePath))
             {
@@ -226,6 +224,11 @@ namespace FlowLog
             return protocolDict.ContainsKey(protocolNumber) ? protocolDict[protocolNumber].ToLower() : "n/a";
         }
 
+        /// <summary>
+        /// Adds the count of port and protocol to its respective map
+        /// </summary>
+        /// <param name="portProtocolBucket"></param>
+        /// <param name="portProtCounts"></param>
         private static void CountPortAndProtocolCombinations(List<Tuple<string, string>> portProtocolBucket, Dictionary<Tuple<string, string>, int> portProtCounts)
         {
             foreach (var item in portProtocolBucket)
@@ -235,50 +238,7 @@ namespace FlowLog
                     portProtCounts.TryAdd(pair, 1);
                 else
                     portProtCounts[pair]++;
-
-                // Console.WriteLine(item.Item1 + "," + item.Item2);
             }
-        }
-
-        /// <summary>
-        /// Grabs specific line matching protocol number and returns the Keyword
-        /// </summary>
-        /// <param name="filepath"></param>
-        /// <param name="lineNumber"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        private static string GetLineFromFile(string filepath, int lineNumber)
-        {
-            if (lineNumber < 1)
-            {
-                throw new ArgumentException("Line number is less than 1!");
-            }
-
-            using (var reader = new StreamReader(filepath))
-            {
-                for (int i = 1; i < lineNumber; i++)
-                {
-                    string line = reader.ReadLine();
-                    if (line == null)
-                    {
-                        return null;
-                    }
-
-                    if (i == lineNumber)
-                    {
-                        char delimiter = ',';
-                        string[] lineItems = line.Split(delimiter);
-                        return lineItems[1];
-
-                    }
-                }
-            }
-
-            return null;
         }
     }
-
-
-
-
 }
