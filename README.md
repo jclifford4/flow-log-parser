@@ -21,6 +21,19 @@ The default flow log format is the immutable standard format using v2. The avail
 - Run `./flow-log-parser.exe`
   - an output.csv file will be created with desired output
  
+ # If you don't want to run the exe:
+ - You will need a few things to build the project
+ - [.NET 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) on your machine.
+ - VS Code plus:
+    - [.Net Install Tool](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.vscode-dotnet-runtime)
+    - [C\# Dev Kit](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
+    - You may have to restart VS Code to allow changes to take place
+ - Clone the repo to desired location
+ - `cd flow-log-parser` and `. code` for full project
+    -  then `dotnet build`
+    -  then `cd flow-log-parser` again
+    -  then `dotnet run`
+    -  The `output.csv` will be appear inside the project
 
 # Linux Download
 - Download the linux-x64.zip in Releases
