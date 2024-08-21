@@ -11,6 +11,7 @@ The default flow log format is the immutable standard format using v2. The avail
 
 # Windows Download
 - Download the win-x64.zip in Releases
+- Grab the README.md as well
 - Unzip the files
 - `cd` into the unzipped folder
 - Inside will be:
@@ -23,6 +24,7 @@ The default flow log format is the immutable standard format using v2. The avail
 
 # Linux Download
 - Download the linux-x64.zip in Releases
+- Grab the README.md as well
 - Unzip the files
 - `cd` into the unzipped folder
 - Inside will be:
